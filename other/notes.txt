@@ -1,0 +1,8 @@
+1. parse function will not return anything and will just do the output via python
+2. no identifiers for builtin functions
+    - getlen x = len(n)
+    - NO MORE GETLEN!!!
+    - just be x = len(n)
+3. functions be multiline, no endfunction or endfor
+4. FOR LOOPS AND WHILE LOOPS
+5. stay motivated 

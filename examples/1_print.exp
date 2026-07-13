@@ -1,0 +1,9 @@
+; prints the word hello
+print "hello"
+x = 5
+
+; prints the number 5 AS A STRING
+print x
+
+; prints "hello i am 5 years old"
+print "hello i am {x} years old"
