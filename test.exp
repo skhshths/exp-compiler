@@ -1,3 +1,4 @@
-lien 1
-lien 2
-line 3
+string = "hello world"
+sstring2 = "this is sstring2"
+
+print "{string} {sstring2}"
