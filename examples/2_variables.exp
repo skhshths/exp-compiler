@@ -1,0 +1,9 @@
+; x is the number 5
+x = 5
+; y is the letter 5
+y = "5"
+; both act the same for printing and console stuff, only numbers can be used for arithmetic.
+
+print x
+; prints the number 5 ("5")
+; prints the letter 5 ("5")
