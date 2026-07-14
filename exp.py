@@ -11,6 +11,16 @@ class Compiler:
     print(f"\033[91m{message}\033[0m")
   
   def _define_variable(self, var_name, value):
+    """
+    cases:
+     - x = 5 + 5 + 5 + ...
+     - x = 5 + 5
+     - x = 3
+     - x = y
+    """
+    if any(item in "+-*/" for item in value):
+      if any(item in self.variables for item in value.split(" ")):
+        ... # HERE
     self.variables[var_name] = value.strip("\"")
 
   def _comment(self):
@@ -27,7 +37,7 @@ class Compiler:
         if amount_left_brackets != amount_right_brackets:
           self._redprint("Unclosed/extra '{' or '}'")
           exit()
-        
+
         var_stack = []
         instances = []
         for index, letter in enumerate(letters):
@@ -38,11 +48,13 @@ class Compiler:
             final_target_val = self.variables[final_target_var]
             var_stack.append(final_target_val)
             instances.append("{" + final_target_var + "}")
-        
+
         current = "".join(letters)
         for instance in instances:
           current = current.replace(instance, self.variables[instance.strip("{").strip("}")])
         print(current)
+      else:
+        print(message.strip("\""))
 
     elif letters[0] != "\"":
       try:
