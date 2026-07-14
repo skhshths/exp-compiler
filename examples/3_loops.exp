@@ -1,3 +1,9 @@
 ; prints all numbers 0 through 5, starts at 0
+; double inclusive
 for var in list(0, 5):
   print var
+
+; var is leftover as the final value seen in the loop
+
+; prints 5 because that is the last value var was in the loop
+print var

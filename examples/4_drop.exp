@@ -1,0 +1,10 @@
+x = 5
+
+; prints 5
+print x
+
+; drops the variable x, making it nonexistent
+drop x
+
+; raises error because x doesn't exist anymore
+print x

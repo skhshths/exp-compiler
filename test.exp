@@ -1,2 +1,6 @@
-for var in list(0, 5):
-  print var
+x = 5
+
+print x
+
+drop x
+print x
