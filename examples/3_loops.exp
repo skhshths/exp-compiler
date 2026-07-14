@@ -1,0 +1,3 @@
+; prints all numbers 0 through 5, starts at 0
+for var in list(0, 5):
+  print var

@@ -1,4 +1,2 @@
-y = 5
-x = y + 5
-
-print x
+for var in list(0, 5):
+  print var
