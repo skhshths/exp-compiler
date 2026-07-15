@@ -1,0 +1,15 @@
+x = 4
+; will not run, x is not 5.
+if x is 5:
+  y = x + 1
+  print y
+
+; will run, x is not 5.
+if x is not 5:
+  y = x - 1
+  print y
+
+; IS
+; IS NOT
+; >
+; <

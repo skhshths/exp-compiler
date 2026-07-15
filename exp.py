@@ -20,19 +20,58 @@ class Compiler:
   def _redprint(self, message):
     print(f"\033[91m{message}\033[0m")
 
-  def _loop(self, this_line, items):
-    target_var = items[1]
-    r = [int(item) for item in " ".join(items).split(" in ")[1].split("list(")[1].rstrip("):").split(", ")]
-    lines_after = self.data[self.data.index(this_line) + 1:]
-
+  def _get_indented(self, current_global_index):
+    lines_after = self.data[current_global_index + 1:]
     while "" in [item.strip() for item in lines_after]:
       lines_after.remove("")
-    targeted_lines_indexes = []
+    targeted_indexes = []
     for index, line in enumerate(lines_after):
       if line.startswith("  "):
-        targeted_lines_indexes.append(index)
+        targeted_indexes.append(index)
       else: break
-    targeted_lines = [lines_after[i].strip() for i in targeted_lines_indexes]
+    targeted_lines = [lines_after[i].strip() for i in targeted_indexes]
+    return targeted_lines
+
+  def _if(self, line):
+    cgi = self.data.index(line) # current global index
+    targeted_lines = self._get_indented(cgi)
+    query = line.split("if ")[1].rstrip(":").split(" ")
+    if "is" in query and "not" not in query:
+      query = " ".join(query).split(" is ")
+      for index, item in enumerate(query):
+        if item in self.variables:
+          query[index] = self.variables[item]
+
+      if query[0] == query[1]:
+        self.parse(targeted_lines)
+
+    elif "is" in query and "not" in query:
+      query = " ".join(query).split(" is not ")
+      for index, item in enumerate(query):
+        if item in self.variables:
+          query[index] = self.variables[item]
+
+      if query[0] != query[1]:
+        self.parse(targeted_lines)
+    elif "is" not in query and ">" in query:
+      query = " ".join(query).split(" > ")
+      for index, item in enumerate(query):
+        if item in self.variables: query[index] = self.variables[item]
+
+      if query[0] > query[1]: self.parse(targeted_lines)
+    elif "is" not in query and "<" in query:
+      query = " ".join(query).split(" < ")
+      for index, item in enumerate(query):
+        if item in self.variables: query[index] = self.variables[item]
+
+      if query[0] < query[1]: self.parse(targeted_lines)
+
+  def _loop(self, this_line, items):
+    target_var = items[1]
+    r = [int(item) for item in " ".join(items).split(" in ")[1].split("list(")[1].rstrip("):").split(", ")] # range
+    lines_after = self.data[self.data.index(this_line) + 1:]
+    i = self.data.index(this_line) # current global index
+    targeted_lines = self._get_indented(i)
 
     for var in range(r[0], r[1] + 1):
       self.variables[target_var] = str(var)
@@ -60,8 +99,7 @@ class Compiler:
         self.variables[var_name] = final
         return 0
       else:
-        try:
-          final = eval("".join(split_values))
+        try: final = eval("".join(split_values))
         except Exception as e:
           self._redprint(e)
           exit()
@@ -145,6 +183,9 @@ class Compiler:
 
       elif items[0] == "drop":
         self._drop(line)
+
+      elif items[0] == "if":
+        self._if(line)
 
       else:
         self._define_variable(items[0], line.split(" = ")[1])

@@ -1,6 +1,6 @@
 x = 5
+if x is 5:
+  print "x is 5"
 
-print x
-
-drop x
-print x
+if x > 6:
+  print "x > 1"
