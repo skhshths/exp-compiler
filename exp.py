@@ -77,6 +77,14 @@ class Compiler:
       self.variables[target_var] = str(var)
       self.parse(targeted_lines)
 
+  def _get_val(self, var_name):
+    if "[" not in var_name:
+      return self.variables[var_name]
+    else:
+      initial_name = var_name.split("[")[0]
+      index = var_name.split("[")[1].rstrip("]")
+      return self.variables[initial_name][int(index)]
+
   def _define_variable(self, var_name, value):
     """
     cases:
@@ -84,9 +92,32 @@ class Compiler:
      - x = 5 + 5
      - x = 3
      - x = y
+     - x = { 1, 2, 3, 4, 5, ... }
     """
     split_values = value.split(" ")
-    if any(item in "+-*/" for item in value):
+    if "sum" in value or "max" in value or "min" in value or "len" in value:
+      if "sum" in value:
+        target = value.split("sum(")[1].rstrip(")")
+        s = sum(self._get_val(target))
+        self.variables[var_name] = s
+        return 0
+      if "max" in value:
+        target = value.split("max(")[1].rstrip(")")
+        m = max(self._get_val(target))
+        self.variables[var_name] = m
+        return 0
+      if "min" in value:
+        target = value.split("min(")[1].rstrip(")")
+        m = min(self._get_val(target))
+        self.variables[var_name] = m
+        return 0
+      if "len" in value:
+        target = value.split("len(")[1].rstrip(")")
+        l = len(self._get_val(target))
+        self.variables[var_name] = l
+        return 0
+
+    elif any(item in "+-*/" for item in value):
       if any(item in self.variables for item in split_values):
         for index, item in enumerate(split_values):
           if item in self.variables:
@@ -105,6 +136,12 @@ class Compiler:
           exit()
         self.variables[var_name] = final
         return 0
+    elif "{" in value:
+      split = value.lstrip("{ ").rstrip(" }").split(" ")
+      final = [int(item.rstrip(", ")) for item in split]
+      self.variables[var_name] = final
+      return 0
+
     self.variables[var_name] = value.strip("\"")
     return 0
 
@@ -127,23 +164,25 @@ class Compiler:
         instances = []
         for index, letter in enumerate(letters):
           if letter == "{":
+
             lower = index
             from_current_letter = letters[lower:]
             final_target_var = "".join(from_current_letter[1:from_current_letter.index("}")])
-            final_target_val = self.variables[final_target_var]
+            final_target_val = self._get_val(final_target_var)
             var_stack.append(final_target_val)
             instances.append("{" + final_target_var + "}")
 
         current = "".join(letters)
         for instance in instances:
-          current = current.replace(instance, str(self.variables[instance.strip("{").strip("}")]))
+          out = self._get_val(instance.strip("{").strip("}"))
+          current = current.replace(instance, str(out))
         self._say(current)
       else:
         self._say(message.strip("\""))
 
     elif letters[0] != "\"":
       try:
-        self._say(self.variables[message])
+        self._say(self._get_val(message))
       except Exception as e:
         self._redprint(f"{e} is not defined")
         exit()
@@ -171,10 +210,10 @@ class Compiler:
 
       if items[0] == ";":
         self._comment()
-      
+
       elif items[0] == "print":
         self._print(" ".join(items).split("print ")[1])
-      
+
       elif items[0] == "for":
         self._loop(line, items)
 

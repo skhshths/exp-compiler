@@ -1,6 +1,12 @@
-x = 5
-if x is 5:
-  print "x is 5"
+x = { 1, 2, 3, 4, 5 }
+; 1 + 2 + 3 + 4 + 5 = 15
 
-if x > 6:
-  print "x > 1"
+sum = sum(x)
+min = min(x)
+max = max(x)
+len = len(x)
+
+print sum
+print min
+print max
+print len

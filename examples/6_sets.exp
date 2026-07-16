@@ -1,0 +1,20 @@
+; x is the set of all numbers 1 through 5
+x = { 1, 2, 3, 4, 5 }
+
+; prints "1"
+print x[0]
+
+; out of bound error
+print x[5]
+
+; prints "5"
+print x[4]
+
+; prints all values of the set x
+for var in x:
+  print var
+
+length = len(x)
+sum = sum(x)
+m = max(x)
+m2 = min(x)
