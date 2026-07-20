@@ -1,12 +1,11 @@
-x = { 1, 2, 3, 4, 5 }
-; 1 + 2 + 3 + 4 + 5 = 15
+x = { 1, 1, 2, 3, "hello world" }
 
-sum = sum(x)
-min = min(x)
-max = max(x)
-len = len(x)
+print x
 
-print sum
-print min
-print max
-print len
+x = x.without(1)
+
+print x
+
+n = x.without("hello world")
+
+print n

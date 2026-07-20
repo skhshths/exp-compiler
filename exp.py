@@ -13,6 +13,14 @@ class Compiler:
 
     with open(self.path, "r") as f:
       self.data = [item.strip("\n") for item in f.readlines()]
+  
+  def _is_number(self, x):
+    points = []
+    for item in list(x):
+      if item in "1234567890": points.append(True)
+      else: points.append(False)
+    return False if False in points else True
+
   def _say(self, message):
     if self.debug: print(f"\033[44m{message}\033[0m")
     else: print(message)
@@ -95,6 +103,36 @@ class Compiler:
      - x = { 1, 2, 3, 4, 5, ... }
     """
     split_values = value.split(" ")
+    
+
+    if ".insert" in value or ".without" in value:
+      if ".insert" in value:
+        target_val = value.split(".insert(")[1].rstrip(")")
+        
+        if self._is_number(target_val): target_val = int(target_val)
+        else: target_val = target_val.strip("\"")
+
+        target_set = value.split(".insert(")[0]
+        target_set_val = self._get_val(target_set)
+        out = target_set_val
+        out.append(target_val)
+
+        self.variables[var_name] = out
+        return 0
+      elif ".without" in value:
+        target_val = value.split(".without(")[1].rstrip(")")
+        if self._is_number(target_val): target_val = int(target_val)
+        else: target_val = target_val.strip("\"")
+
+        target_set = value.split(".without(")[0]
+        target_set_val = self._get_val(target_set)
+        out = target_set_val
+        while target_val in out:
+          out.remove(target_val)
+        
+        self.variables[var_name] = out
+        return 0
+
     if "sum" in value or "max" in value or "min" in value or "len" in value:
       if "sum" in value:
         target = value.split("sum(")[1].rstrip(")")
@@ -116,7 +154,6 @@ class Compiler:
         l = len(self._get_val(target))
         self.variables[var_name] = l
         return 0
-
     elif any(item in "+-*/" for item in value):
       if any(item in self.variables for item in split_values):
         for index, item in enumerate(split_values):
@@ -137,8 +174,16 @@ class Compiler:
         self.variables[var_name] = final
         return 0
     elif "{" in value:
-      split = value.lstrip("{ ").rstrip(" }").split(" ")
-      final = [int(item.rstrip(", ")) for item in split]
+      split = value.lstrip("{ ").rstrip(" }").split(", ")
+      try:
+        final = [int(item) for item in split]
+      # theres an imposter among us... (a string)
+      except ValueError:
+        final = []
+        for item in split:
+          if self._is_number(item): final.append(int(item))
+          else: final.append(item.strip("\""))
+
       self.variables[var_name] = final
       return 0
 
@@ -192,7 +237,7 @@ class Compiler:
     del self.variables[target]
 
   def parse(self, given):
-    if given == None: given = self.data
+    if given is None: given = self.data
     # loop through all lines
     for line in given:
       if line.startswith(" "):
