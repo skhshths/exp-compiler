@@ -1,7 +1,16 @@
+general
+  1. python3 exp.py exp_file.exp - ✅
+    - exp.py -> main.py - ✅
+    - choose which .exp file to run instead - ✅ 
+
 sets
-  - .insert() with a list - ✅
-  - .intersect() - ✅
-  - .reverse() - ✅
-  - for loop through the set -✅ 
-  - .split(index)
-    - not inclusive of the item at the index, after that one
+  1. .insert() with a list - ✅
+  2. .intersect() - ✅
+  3. .reverse() - ✅
+  4. for loop through the set - ✅
+  5. .split_after(index) - ✅
+    - splits after the {index} element - ✅
+    - doesn't include the {index} element - ✅
+  6. .split_before(index) - ✅
+    - splits after the {index} element - ✅
+    - does include the {index} element - ✅
