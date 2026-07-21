@@ -1,0 +1,7 @@
+sets
+  - .insert() with a list - ✅
+  - .intersect() - ✅
+  - .reverse() - ✅
+  - for loop through the set -✅ 
+  - .split(index)
+    - not inclusive of the item at the index, after that one

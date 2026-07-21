@@ -76,26 +76,14 @@ class Compiler:
 
   def _loop(self, this_line, items):
     target_var = items[1]
-    x = " ".join(items).split(" in ")[1]
-    if "list(" in x:
-      r = [int(item) for item in " ".join(items).split(" in ")[1].split("list(")[1].rstrip("):").split(", ")] # range
-      lines_after = self.data[self.data.index(this_line) + 1:]
-      i = self.data.index(this_line) # current global index
-      targeted_lines = self._get_indented(i)
+    r = [int(item) for item in " ".join(items).split(" in ")[1].split("list(")[1].rstrip("):").split(", ")] # range
+    lines_after = self.data[self.data.index(this_line) + 1:]
+    i = self.data.index(this_line) # current global index
+    targeted_lines = self._get_indented(i)
 
-      for var in range(r[0], r[1] + 1):
-        self.variables[target_var] = str(var)
-        self.parse(targeted_lines)
-    else:
-      target = " ".join(items).split(" in ")[1].rstrip(":")
-      target_val = self._get_val(target)
-
-      i = self.data.index(this_line)
-      targeted_lines = self._get_indented(i)
-
-      for var in target_val:
-        self.variables[target_var] = str(var)
-        self.parse(targeted_lines)
+    for var in range(r[0], r[1] + 1):
+      self.variables[target_var] = str(var)
+      self.parse(targeted_lines)
 
   def _get_val(self, var_name):
     if "[" not in var_name:
@@ -114,9 +102,9 @@ class Compiler:
      - x = y
      - x = { 1, 2, 3, 4, 5, ... }
     """
-    split_values = value.split(" = ")
+    split_values = value.split(" ")
 
-    if ".insert" in value or ".without" in value or ".intersect" in value or ".reverse" in value:
+    if ".insert" in value or ".without" in value or ".insert" in value:
       if ".insert" in value:
         target_val = value.split(".insert(")[1].rstrip(")")
         if target_val not in self.variables:
@@ -129,7 +117,6 @@ class Compiler:
           out.append(target_val)
 
           self.variables[var_name] = out
-          return 0
         else:
           target_set = value.split(".insert(")[0]
           target_set_val = self._get_val(target_set)
@@ -145,7 +132,7 @@ class Compiler:
             out.append(target_val)
 
           self.variables[var_name] = out
-          return 0
+        return 0
       elif ".without" in value:
         target_val = value.split(".without(")[1].rstrip(")")
         if self._is_number(target_val): target_val = int(target_val)
@@ -160,20 +147,12 @@ class Compiler:
         self.variables[var_name] = out
         return 0
       elif ".intersect" in value:
-        target_val = self._get_val(value.split(".intersect(")[1].rstrip(")"))
-        base_val = self._get_val(value.split(".intersect(")[0])
-        out = []
-        for index, item in enumerate(target_val):
-          out.append(base_val[index])
-          out.append(item)
-        
-        self.variables[var_name] = out
-        return 0
-      elif ".reverse" in value:
-        base_val = value.split(".reverse()")[0]
-        r = self._get_val(base_val)[::-1]
-        self.variables[base_val] = r
-        return 0
+        target_val = value.split(".intersect(")[1].rstrip(")")
+        base_val = value.split(".intersect(")[0]
+        print("hi")
+        print(target_val)
+        print(base_val)
+
     if "sum" in value or "max" in value or "min" in value or "len" in value:
       if "sum" in value:
         target = value.split("sum(")[1].rstrip(")")
@@ -196,7 +175,6 @@ class Compiler:
         self.variables[var_name] = l
         return 0
     elif any(item in "+-*/" for item in value):
-      split_values = split_values[0].split(" ")
       if any(item in self.variables for item in split_values):
         for index, item in enumerate(split_values):
           if item in self.variables:

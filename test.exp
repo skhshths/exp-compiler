@@ -1,11 +1,5 @@
-x = { 1, 1, 2, 3, "hello world" }
+x = { 1, 2, 4 }
 
-print x
-
-x = x.without(1)
-
-print x
-
-n = x.without("hello world")
-
-print n
+for n in x:
+  n_p1 = n + 1
+  print n_p1
