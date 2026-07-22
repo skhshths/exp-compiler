@@ -1,7 +1,1 @@
-n = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 }
-
-x = n.split_after(5)
-y = n.split_before(5)
-
-print x
-print y
+x = y + 3

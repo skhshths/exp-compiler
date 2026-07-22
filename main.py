@@ -13,7 +13,7 @@ class Compiler:
 
     with open(self.path, "r") as f:
       self.data = [item.strip("\n") for item in f.readlines()]
-  
+
   def _is_number(self, x):
     points = []
     for item in list(x):
@@ -221,14 +221,14 @@ class Compiler:
         try:
           final = eval("".join(split_values))
         except Exception as e:
-          self._redprint(e)
+          self._redprint(f"dude lock in.. {e}")
           exit()
         self.variables[var_name] = final
         return 0
       else:
         try: final = eval("".join(split_values))
         except Exception as e:
-          self._redprint(e)
+          self._redprint(f"dude lock in.. {e}")
           exit()
         self.variables[var_name] = final
         return 0
@@ -245,8 +245,15 @@ class Compiler:
 
       self.variables[var_name] = final
       return 0
+    elif value in self.variables:
+      self.variables[var_name] = self._get_val(value)
+    elif "\"" in value:
+      self.variables[var_name] = value.strip("\"")
+    elif value not in self.variables and "\"" not in value:
+      # here
+      self._redprint(f"{value} is not a variable and not a string. what where you trying to do? (add quotes)")
+      exit()
 
-    self.variables[var_name] = value.strip("\"")
     return 0
 
   def _comment(self):
@@ -261,7 +268,7 @@ class Compiler:
         amount_left_brackets = message.count("{")
         amount_right_brackets = message.count("}")
         if amount_left_brackets != amount_right_brackets:
-          self._redprint("Unclosed/extra '{' or '}'")
+          self._redprint("unclosed/extra '{' or '}'. haven't i told u to lock in before??")
           exit()
 
         var_stack = []
@@ -288,7 +295,7 @@ class Compiler:
       try:
         self._say(self._get_val(message))
       except Exception as e:
-        self._redprint(f"{e} is not defined")
+        self._redprint(f"dude lock in! {e}")
         exit()
 
   def _drop(self, line):
