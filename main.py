@@ -2,6 +2,8 @@ class Compiler:
   def __init__(self, config):
     # given
     self.variables = {}
+    self.function_names = []
+    self.functions = []
 
     # config
     self.path = config["path"]
@@ -89,14 +91,13 @@ class Compiler:
     else:
       target = " ".join(items).split(" in ")[1].rstrip(":")
       target_val = self._get_val(target)
-
       i = self.data.index(this_line)
       targeted_lines = self._get_indented(i)
 
       for var in target_val:
         self.variables[target_var] = str(var)
         self.parse(targeted_lines)
-
+      
   def _get_val(self, var_name):
     if "[" not in var_name:
       return self.variables[var_name]
@@ -212,6 +213,7 @@ class Compiler:
         l = len(self._get_val(target))
         self.variables[var_name] = l
         return 0
+    
     elif any(item in "+-*/" for item in value):
       split_values = split_values[0].split(" ")
       if any(item in self.variables for item in split_values):
@@ -232,6 +234,7 @@ class Compiler:
           exit()
         self.variables[var_name] = final
         return 0
+    
     elif "{" in value:
       split = value.lstrip("{ ").rstrip(" }").split(", ")
       try:
@@ -245,13 +248,25 @@ class Compiler:
 
       self.variables[var_name] = final
       return 0
+    
     elif value in self.variables:
       self.variables[var_name] = self._get_val(value)
+    
     elif "\"" in value:
       self.variables[var_name] = value.strip("\"")
-    elif value not in self.variables and "\"" not in value:
+    
+    elif self._is_number(value):
+      self.variables[var_name] = value
+    
+    elif value.split("(")[0] in self.function_names:
+      packet = []
+      for item in self.functions:
+        if item[0] == value.split("(")[0]: packet = item1
       # here
-      self._redprint(f"{value} is not a variable and not a string. what where you trying to do? (add quotes)")
+      
+
+    elif value not in self.variables and "\"" not in value and not self._is_number(value):
+      self._redprint(f"{value} is not a variable and not a string. what where you trying to do?")
       exit()
 
     return 0
@@ -302,6 +317,27 @@ class Compiler:
     target = line.split(" ")[1]
     del self.variables[target]
 
+  def _function(self, line):
+    function_name = line.split("(")[0].lstrip("fn ")
+    function_args = line.split("(")[1].rstrip("):")
+    if function_args != "": function_args = function_args.split(", ")
+    print(f"{function_args=}")
+    i = self.data.index(line)
+    targeted_lines = self._get_indented(i)
+    original_split = [line.split(" ") for line in targeted_lines]
+    for index, line in enumerate(targeted_lines):
+      split_line = line.split(" ")
+      if split_line[0] in ["global", "local"]:
+        targeted_lines[index] = " ".join(split_line[1:])
+    
+    self.parse(targeted_lines)
+
+  def _define_function(self, line):
+    # [fn_name, fn_line_index, fn_args]
+    packet = [line.split("(")[0].lstrip("fn "), self.data.index(line), line.split("(")[1].rstrip("):").split(", ")]
+    self.functions.append(packet)
+    self.function_names.append(packet[0])
+
   def parse(self, given):
     if given is None: given = self.data
     # loop through all lines
@@ -330,6 +366,9 @@ class Compiler:
 
       elif items[0] == "|TAB|":
         pass
+      
+      elif items[0] == "fn":
+        self._define_function(line)
 
       elif items[0] == "drop":
         self._drop(line)

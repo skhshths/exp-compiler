@@ -1,1 +1,10 @@
-x = y + 3
+fn x(a, b, c):
+  global sum_global = a + b + c
+  local sum_local = a + b + c
+  local asdf = b * c
+  ret asdf
+
+v = x(1, 2, 3)
+
+print sum_global
+; print sum_local

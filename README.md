@@ -45,3 +45,7 @@ part 2
 #### c = max(x)
 #### d = min(x)
 #### print "{a}, {b}, {c}, {d}" <- prints '6, 3, 3, 1'
+
+## functions
+#### fn x(a, b, c):
+####   local g = 
